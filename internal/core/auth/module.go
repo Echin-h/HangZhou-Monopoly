@@ -8,28 +8,53 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-type UserInfo struct {
-	Uid string
+type Info struct {
+	Uid        string
+	SessionKey string
+	Name       string
+
+	IsRefreshToken bool
 }
 
 type JWTClaims struct {
-	Info UserInfo
+	Info Info
 	jwt.StandardClaims
 }
 
-const TokenExpireDuration = time.Hour * 12
+const (
+	AccessTokenExpireIn  = time.Hour * 12
+	RefreshTokenExpireIn = time.Hour * 24 * 30
+)
 
 // GenToken 生成JWT
-func GenToken(info UserInfo) (string, error) {
+func GenToken(info Info, expire ...time.Duration) (string, error) {
+	if len(expire) == 0 {
+		expire = append(expire, AccessTokenExpireIn)
+	}
 	c := JWTClaims{
 		Info: info,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(TokenExpireDuration).Unix(),
+			ExpiresAt: time.Now().Add(expire[0]).Unix(),
 			Issuer:    config.GetConfig().Auth.Issuer,
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
 	return token.SignedString([]byte(config.GetConfig().Auth.Secret))
+}
+
+func genTokenByTest(info Info, expire ...time.Duration) (string, error) {
+	if len(expire) == 0 {
+		expire = append(expire, AccessTokenExpireIn)
+	}
+	c := JWTClaims{
+		Info: info,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(expire[0]).Unix(),
+			Issuer:    "HangZhou-Monopoly",
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
+	return token.SignedString([]byte("<random>"))
 }
 
 // ParseToken 解析JWT

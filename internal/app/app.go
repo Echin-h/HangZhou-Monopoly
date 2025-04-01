@@ -1,6 +1,11 @@
 package app
 
 import (
+	"errors"
+
+	"github.com/Echin-h/HangZhou-Monopoly/config"
+	"github.com/Echin-h/HangZhou-Monopoly/internal/app/user/dao"
+	"github.com/Echin-h/HangZhou-Monopoly/internal/core/database"
 	"github.com/Echin-h/HangZhou-Monopoly/internal/core/kernel"
 )
 
@@ -24,7 +29,11 @@ func (*UnimplementedModule) Info() string {
 }
 
 func (*UnimplementedModule) PreInit(*kernel.Engine) error {
-	return nil
+	db := database.GetDb(config.GetConfig().Databases[0].Key)
+	if db == nil {
+		return errors.New("module user's database is null")
+	}
+	return dao.Init(db)
 }
 
 func (*UnimplementedModule) Init(*kernel.Engine) error {

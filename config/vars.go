@@ -17,6 +17,12 @@ type GlobalConfig struct {
 	OSS       Oss          `yaml:"Oss"`
 	Mail      Mail         `yaml:"Mail"`
 	CMS       Cms          `yaml:"Cms"`
+	WxLogin   WxLogin      `yaml:"WxLogin"`
+}
+
+type WxLogin struct {
+	AppId     string `yaml:"AppId"`
+	AppSecret string `yaml:"AppSecret"`
 }
 
 type Datasource struct {
