@@ -2,9 +2,10 @@ package auth
 
 import (
 	"errors"
-	"github.com/Echin-h/HangZhou-Monopoly/config"
-	"githu
 	"time"
+
+	"github.com/Echin-h/HangZhou-Monopoly/config"
+	"github.com/golang-jwt/jwt"
 )
 
 type UserInfo struct {
