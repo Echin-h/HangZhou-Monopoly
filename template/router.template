@@ -1,0 +1,13 @@
+package router
+
+import (
+    "github.com/flamego/binding"
+	"github.com/flamego/flamego"
+	"github.com/wujunyi792/flamego-quick-template/internal/app/{{.appName}}/dto"
+	"github.com/wujunyi792/flamego-quick-template/internal/app/{{.appName}}/handler"
+)
+
+func App{{.appNameExport}}Init(e *flamego.Flame) {
+    e.Get("/{{.appName}}/v1", handler.HandleExampleGet)
+    e.Post("/{{.appName}}/v1", binding.JSON(dto.ExamplePost{}), handler.HandleExamplePost)
+}
