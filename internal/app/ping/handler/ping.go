@@ -2,10 +2,12 @@ package handler
 
 import (
 	"fmt"
+
+	"github.com/Echin-h/HangZhou-Monopoly/config"
+	"github.com/Echin-h/HangZhou-Monopoly/internal/app/ping/dto"
+	"github.com/Echin-h/HangZhou-Monopoly/internal/core/database"
+	"github.com/Echin-h/HangZhou-Monopoly/internal/middleware/response"
 	"github.com/flamego/flamego"
-	"github.com/wujunyi792/flamego-quick-template/config"
-	"github.com/wujunyi792/flamego-quick-template/internal/app/ping/dto"
-	"github.com/wujunyi792/flamego-quick-template/internal/middleware/response"
 )
 
 func HandleExampleGet(c flamego.Context, r flamego.Render) {
@@ -28,5 +30,8 @@ func HandleExampleGet(c flamego.Context, r flamego.Render) {
 }
 
 func HandlePing(r flamego.Render, req dto.ExamplePost) {
+	if database.GetDb("mysql") == nil {
+		response.HTTPFail(r, 500, "database connection failed", 500)
+	}
 	response.HTTPSuccess(r, req)
 }

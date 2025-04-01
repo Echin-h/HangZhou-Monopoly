@@ -1,8 +1,7 @@
 package corn
 
 import (
-	"github.com/robfig/cron"
-	"github.com/wujunyi792/flamego-quick-template/internal/core/logx"
+	"github.com/Echin-h/HangZhou-Monopoly/internal/core/logx"
 )
 
 var (

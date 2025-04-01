@@ -1,7 +1,7 @@
 package database
 
 import (
-	"github.com/wujunyi792/flamego-quick-template/internal/core/database/driver"
+	"github.com/Echin-h/HangZhou-Monopoly/internal/core/database/driver"
 	"gorm.io/gorm"
 )
 

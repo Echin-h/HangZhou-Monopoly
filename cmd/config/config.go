@@ -1,8 +1,9 @@
 package config
 
 import (
+	"github.com/Echin-h/HangZhou-Monopoly/config"
 	"github.com/spf13/cobra"
-	"github.com/wujunyi792/flamego-quick-template/config"
+
 	"os"
 )
 

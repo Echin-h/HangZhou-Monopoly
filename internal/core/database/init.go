@@ -1,10 +1,11 @@
 package database
 
 import (
-	"github.com/wujunyi792/flamego-quick-template/config"
-	"github.com/wujunyi792/flamego-quick-template/internal/core/logx"
-	"gorm.io/gorm"
 	"sync"
+
+	"github.com/Echin-h/HangZhou-Monopoly/config"
+	"github.com/Echin-h/HangZhou-Monopoly/internal/core/logx"
+	"gorm.io/gorm"
 )
 
 var (
@@ -19,7 +20,7 @@ func InitDB() {
 		if source.Key == "" {
 			source.Key = "*"
 		}
-		logx.NameSpace("DB").Infoln("create datasource %s => %s:%s", source.Key, source.IP, source.PORT)
+		logx.NameSpace("DB").Infof("create datasource %s => %s:%s", source.Key, source.IP, source.PORT)
 	}
 }
 

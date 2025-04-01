@@ -1,7 +1,7 @@
 package ip
 
 import (
-	"github.com/wujunyi792/flamego-quick-template/pkg/colorful"
+	"github.com/Echin-h/HangZhou-Monopoly/pkg/colorful"
 	"net"
 )
 

@@ -1,10 +1,10 @@
 package cmd
 
 import (
+	"github.com/Echin-h/HangZhou-Monopoly/cmd/config"
+	"github.com/Echin-h/HangZhou-Monopoly/cmd/create"
+	"github.com/Echin-h/HangZhou-Monopoly/cmd/server"
 	"github.com/spf13/cobra"
-	"github.com/wujunyi792/flamego-quick-template/cmd/config"
-	"github.com/wujunyi792/flamego-quick-template/cmd/create"
-	"github.com/wujunyi792/flamego-quick-template/cmd/server"
 	"os"
 )
 

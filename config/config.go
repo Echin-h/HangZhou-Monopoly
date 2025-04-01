@@ -1,13 +1,14 @@
 package config
 
 import (
+	"os"
+
+	"github.com/Echin-h/HangZhou-Monopoly/pkg/colorful"
+	"github.com/Echin-h/HangZhou-Monopoly/pkg/fs"
 	"github.com/fsnotify/fsnotify"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
-	"github.com/wujunyi792/flamego-quick-template/pkg/colorful"
-	"github.com/wujunyi792/flamego-quick-template/pkg/fs"
 	"gopkg.in/yaml.v3"
-	"os"
 )
 
 var serveConfig *GlobalConfig

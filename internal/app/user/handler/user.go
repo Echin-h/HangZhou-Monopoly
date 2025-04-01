@@ -2,10 +2,11 @@ package handler
 
 import (
 	"fmt"
-	"github.com/flamego/flamego"
+
 	"github.com/Echin-h/HangZhou-Monopoly/config"
-	"github.com/Echin-h/HangZhou-Monopoly/internal/app/{{.appName}}/dto"
+	"github.com/Echin-h/HangZhou-Monopoly/internal/app/user/dto"
 	"github.com/Echin-h/HangZhou-Monopoly/internal/middleware/response"
+	"github.com/flamego/flamego"
 )
 
 func HandleExampleGet(c flamego.Context, r flamego.Render) {

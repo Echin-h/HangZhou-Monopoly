@@ -5,10 +5,9 @@ import (
 	"crypto/sha1"
 	"encoding/base64"
 	"encoding/json"
-	"github.com/aliyun/aliyun-oss-go-sdk/oss"
-	uuid "github.com/satori/go.uuid"
-	"github.com/wujunyi792/flamego-quick-template/config"
-	"github.com/wujunyi792/flamego-quick-template/internal/core/logx"
+	"github.com/Echin-h/HangZhou-Monopoly/config"
+	"github.com/Echin-h/HangZhou-Monopoly/internal/core/logx"
+	"github.com/
 	"hash"
 	"io"
 	"path"

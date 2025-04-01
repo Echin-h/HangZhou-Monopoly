@@ -1,9 +1,9 @@
 package web
 
 import (
-	"github.com/flamego/flamego"
-	"github.com/wujunyi792/flamego-quick-template/internal/core/auth"
-	"github.com/wujunyi792/flamego-quick-template/internal/middleware/response"
+	"github.com/Echin-h/HangZhou-Monopoly/internal/core/auth"
+	"github.com/Echin-h/HangZhou-Monopoly/internal/middleware/response"
+	"github.c
 	"strings"
 )
 

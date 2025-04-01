@@ -1,8 +1,8 @@
 package web
 
 import (
+	"github.com/Echin-h/HangZhou-Monopoly/internal/websocket"
 	"github.com/flamego/flamego"
-	"github.com/wujunyi792/flamego-quick-template/internal/websocket"
 )
 
 func InjectWebsocket(key string) flamego.Handler {

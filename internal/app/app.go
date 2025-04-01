@@ -1,7 +1,7 @@
 package app
 
 import (
-	"github.com/wujunyi792/flamego-quick-template/internal/core/kernel"
+	"github.com/Echin-h/HangZhou-Monopoly/internal/core/kernel"
 )
 
 type Module interface {

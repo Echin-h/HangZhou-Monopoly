@@ -2,11 +2,12 @@ package router
 
 import (
 	"errors"
+
+	"github.com/Echin-h/HangZhou-Monopoly/internal/app/ping/dto"
+	"github.com/Echin-h/HangZhou-Monopoly/internal/app/ping/handler"
+	"github.com/Echin-h/HangZhou-Monopoly/internal/middleware/response"
 	"github.com/flamego/binding"
 	"github.com/flamego/flamego"
-	"github.com/wujunyi792/flamego-quick-template/internal/app/ping/dto"
-	"github.com/wujunyi792/flamego-quick-template/internal/app/ping/handler"
-	"github.com/wujunyi792/flamego-quick-template/internal/middleware/response"
 )
 
 func AppPingInit(e *flamego.Flame) {

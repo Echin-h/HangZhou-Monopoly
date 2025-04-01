@@ -2,8 +2,8 @@ package auth
 
 import (
 	"errors"
-	"github.com/golang-jwt/jwt"
-	"github.com/wujunyi792/flamego-quick-template/config"
+	"github.com/Echin-h/HangZhou-Monopoly/config"
+	"githu
 	"time"
 )
 

@@ -2,11 +2,11 @@ package ping
 
 import (
 	"context"
-	"github.com/wujunyi792/flamego-quick-template/internal/app"
-	"github.com/wujunyi792/flamego-quick-template/internal/app/ping/dao"
-	"github.com/wujunyi792/flamego-quick-template/internal/app/ping/router"
-	"github.com/wujunyi792/flamego-quick-template/internal/core/database"
-	"github.com/wujunyi792/flamego-quick-template/internal/core/kernel"
+	"github.com/Echin-h/HangZhou-Monopoly/internal/app"
+	"github.com/Echin-h/HangZhou-Monopoly/internal/app/ping/dao"
+	"github.com/Echin-h/HangZhou-Monopoly/internal/app/ping/router"
+	"github.com/Echin-h/HangZhou-Monopoly/internal/core/database"
+	"github.com/Echin-h/HangZhou-Monopoly/internal/core/kernel"
 
 	"sync"
 )

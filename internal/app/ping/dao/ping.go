@@ -1,8 +1,8 @@
 package dao
 
 import (
-	"github.com/wujunyi792/flamego-quick-template/internal/app/ping/model"
-	"github.com/wujunyi792/flamego-quick-template/internal/core/stdao"
+	"github.com/Echin-h/HangZhou-Monopoly/internal/app/ping/model"
+	"github.com/Echin-h/HangZhou-Monopoly/internal/core/stdao"
 	"gorm.io/gorm"
 )
 

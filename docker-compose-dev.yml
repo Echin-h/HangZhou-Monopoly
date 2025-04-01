@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  HangZhou-Monopoly-redis:
+    image: redis
+    container_name: monopoly-redis-ctn
+    ports:
+      - "6379:6379"
+  HangZhou-Monopoly-mysql:
+    image: bitnami/mysql:latest
+    container_name: monopoly-mysql-ctn
+    ports:
+      - "13306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=hangzhou_monopoly
+      - MYSQL_CHARSET=utf8mb4

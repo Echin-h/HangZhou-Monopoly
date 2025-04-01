@@ -2,12 +2,13 @@ package tecentCMS
 
 import (
 	"encoding/json"
+	"github.com/Echin-h/HangZhou-Monopoly/config"
+	"github.com/Echin-h/HangZhou-Monopoly/internal/core/logx"
+	"github.com/tencentcloud/tencentc
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/errors"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
-	sms "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/sms/v20210111" // 引入sms
-	"github.com/wujunyi792/flamego-quick-template/config"
-	"github.com/wujunyi792/flamego-quick-template/internal/core/logx"
+	"github.com/Echin-h/HangZhou-Monopoly/internal/core/logx"
 )
 
 func SendCMS(phone string, parameters []string) bool {

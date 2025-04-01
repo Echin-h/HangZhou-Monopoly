@@ -2,14 +2,15 @@ package create
 
 import (
 	"bytes"
-	"github.com/pkg/errors"
-	"github.com/spf13/cobra"
-	"github.com/wujunyi792/flamego-quick-template/pkg/colorful"
-	"github.com/wujunyi792/flamego-quick-template/pkg/fs"
 	"os"
 	"path"
 	"strings"
 	"text/template"
+
+	"github.com/Echin-h/HangZhou-Monopoly/pkg/colorful"
+	"github.com/Echin-h/HangZhou-Monopoly/pkg/fs"
+	"github.com/pkg/errors"
+	"github.com/spf13/cobra"
 )
 
 var (
@@ -48,6 +49,8 @@ func load() error {
 	dto := path.Join(dir, appName, "dto")
 	service := path.Join(dir, appName, "service")
 	trigger := path.Join(dir, "appInitialize")
+	model := path.Join(dir, appName, "model")
+	dao := path.Join(dir, appName, "dao")
 
 	_ = fs.IsNotExistMkDir(root)
 	_ = fs.IsNotExistMkDir(router)
@@ -55,6 +58,8 @@ func load() error {
 	_ = fs.IsNotExistMkDir(dto)
 	_ = fs.IsNotExistMkDir(service)
 	_ = fs.IsNotExistMkDir(trigger)
+	_ = fs.IsNotExistMkDir(model)
+	_ = fs.IsNotExistMkDir(dao)
 
 	m := map[string]string{}
 	m["appNameExport"] = strings.ToUpper(appName[:1]) + appName[1:]
@@ -65,6 +70,8 @@ func load() error {
 	handler += "/" + m["appName"] + ".go"
 	dto += "/" + m["appName"] + ".go"
 	trigger += "/" + m["appName"] + ".go"
+	model += "/" + m["appName"] + ".go"
+	dao += "/" + m["appName"] + ".go"
 
 	if !force && (fs.FileExist(router) || fs.FileExist(handler) || fs.FileExist(dto) || fs.FileExist(trigger) || fs.FileExist(root)) {
 		return errors.New("target file already exist, use -f flag to cover")
@@ -108,6 +115,22 @@ func load() error {
 		var b bytes.Buffer
 		_ = rt.Execute(&b, m)
 		fs.FileCreate(b, root)
+	}
+
+	if rt, err := template.ParseFiles("template/model.template"); err != nil {
+		return err
+	} else {
+		var b bytes.Buffer
+		_ = rt.Execute(&b, m)
+		fs.FileCreate(b, model)
+	}
+
+	if rt, err := template.ParseFiles("template/dao.template"); err != nil {
+		return err
+	} else {
+		var b bytes.Buffer
+		_ = rt.Execute(&b, m)
+		fs.FileCreate(b, dao)
 	}
 
 	return nil

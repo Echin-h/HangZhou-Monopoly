@@ -1,7 +1,7 @@
 package appInitialize
 
 import (
-	"github.com/wujunyi792/flamego-quick-template/internal/app/ping"
+	"github.com/Echin-h/HangZhou-Monopoly/internal/app/ping"
 )
 
 func init() {

@@ -1,6 +1,6 @@
 package main
 
-import "github.com/wujunyi792/flamego-quick-template/cmd"
+import "github.com/Echin-h/HangZhou-Monopoly/cmd"
 
 func main() {
 	cmd.Execute()

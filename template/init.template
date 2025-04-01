@@ -2,9 +2,9 @@ package {{.appName}}
 
 import (
 	"context"
-	"github.com/wujunyi792/flamego-quick-template/internal/app"
-	"github.com/wujunyi792/flamego-quick-template/internal/app/{{.appName}}/router"
-	"github.com/wujunyi792/flamego-quick-template/internal/core/kernel"
+	"github.com/Echin-h/HangZhou-Monopoly/internal/app"
+	"github.com/Echin-h/HangZhou-Monopoly/internal/app/{{.appName}}/router"
+	"github.com/Echin-h/HangZhou-Monopoly/internal/core/kernel"
 
 	"sync"
 )

@@ -1,9 +1,9 @@
 package cache
 
 import (
-	"github.com/wujunyi792/flamego-quick-template/config"
-	"github.com/wujunyi792/flamego-quick-template/internal/core/cache/types"
-	"github.com/wujunyi792/flamego-quick-template/internal/core/logx"
+	"github.com/Echin-h/HangZhou-Monopoly/config"
+	"github.com/Echin-h/HangZhou-Monopoly/internal/core/cache/types"
+	"github.com/Echin-h/HangZhou-Monopoly/internal/core/logx"
 	"sync"
 )
 

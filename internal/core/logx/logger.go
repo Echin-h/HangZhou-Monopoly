@@ -1,11 +1,12 @@
 package logx
 
 import (
-	"github.com/wujunyi792/flamego-quick-template/config"
+	"os"
+
+	"github.com/Echin-h/HangZhou-Monopoly/config"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
-	"os"
 )
 
 // NameSpace - 提供带有模块命名空间的logger
@@ -16,7 +17,7 @@ func NameSpace(name string) *zap.SugaredLogger {
 func getLogWriter() zapcore.WriteSyncer {
 	if config.GetConfig().LogPath == "" {
 		config.GetConfig().LogPath = "app.log"
-		print("LogPath 未设置, 使用默认值app.log")
+		println("LogPath 未设置, 使用默认值app.log")
 	}
 	lj := &lumberjack.Logger{
 		Filename:   config.GetConfig().LogPath,
