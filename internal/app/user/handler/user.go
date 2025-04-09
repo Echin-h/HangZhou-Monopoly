@@ -14,6 +14,8 @@ import (
 	"github.com/levigross/grequests"
 )
 
+// https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/login.html
+
 func HandleWechatLogin(r flamego.Render, c flamego.Context, req dto.WechatLoginRequest, errs binding.Errors) {
 	if errs != nil {
 		response.ServiceErr(r, errs)
@@ -127,7 +129,6 @@ func HandleTest(r flamego.Render, c flamego.Context) {
 		RefreshToken:        refreshToken,
 	})
 	return
-
 }
 
 func HandleRefreshToken(r flamego.Render, req dto.RefreshTokenRequest) {
@@ -242,8 +243,4 @@ func HandleGetMyInfo(r flamego.Render, c flamego.Context, info auth.Info) {
 	response.HTTPSuccess(r, dto.MyInfoResponse{
 		Username: user.Username,
 	})
-}
-
-func HandlePing(r flamego.Render) {
-	response.HTTPSuccess(r, "pong")
 }

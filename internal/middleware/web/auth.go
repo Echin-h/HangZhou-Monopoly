@@ -21,4 +21,8 @@ func Authorization(c flamego.Context, r flamego.Render) {
 		return
 	}
 	c.Map(entry.Info)
+
+	// 如果需要获得用户信息，可以使用以下代码
+	// var info auth.Info
+	// log.Println(c.Value(reflect.TypeOf(info)))
 }

@@ -2,11 +2,13 @@ package user
 
 import (
 	"context"
-	"github.com/Echin-h/HangZhou-Monopoly/internal/app"
-	"github.com/Echin-h/HangZhou-Monopoly/internal/app/user/router"
-	"github.com/Echin-h/HangZhou-Monopoly/internal/core/kernel"
-
 	"sync"
+
+	"github.com/Echin-h/HangZhou-Monopoly/internal/app"
+	"github.com/Echin-h/HangZhou-Monopoly/internal/app/user/dao"
+	"github.com/Echin-h/HangZhou-Monopoly/internal/app/user/router"
+	"github.com/Echin-h/HangZhou-Monopoly/internal/core/database"
+	"github.com/Echin-h/HangZhou-Monopoly/internal/core/kernel"
 )
 
 type User struct {
@@ -20,7 +22,11 @@ func (p *User) Info() string {
 }
 
 func (p *User) PreInit(engine *kernel.Engine) error {
-	return nil
+	db := database.GetDb("mysql")
+	if db == nil {
+		return nil
+	}
+	return dao.Init(db)
 }
 
 func (p *User) Init(*kernel.Engine) error {

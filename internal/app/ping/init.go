@@ -2,13 +2,13 @@ package ping
 
 import (
 	"context"
+	"sync"
+
 	"github.com/Echin-h/HangZhou-Monopoly/internal/app"
 	"github.com/Echin-h/HangZhou-Monopoly/internal/app/ping/dao"
 	"github.com/Echin-h/HangZhou-Monopoly/internal/app/ping/router"
 	"github.com/Echin-h/HangZhou-Monopoly/internal/core/database"
 	"github.com/Echin-h/HangZhou-Monopoly/internal/core/kernel"
-
-	"sync"
 )
 
 type Ping struct {
@@ -22,7 +22,7 @@ func (p *Ping) Info() string {
 }
 
 func (p *Ping) PreInit(engine *kernel.Engine) error {
-	db := database.GetDb("*")
+	db := database.GetDb("mysql")
 	if db == nil {
 		return nil
 	}

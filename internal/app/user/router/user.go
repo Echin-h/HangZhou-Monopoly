@@ -10,10 +10,10 @@ import (
 
 func AppUserInit(e *flamego.Flame) {
 	e.Group("/user/v1", func() {
-		e.Get("", handler.HandlePing)
+		//e.Get("", handler.HandlePing)
 		e.Group("/login", func() {
 			//e.Post("/general", binding.JSON(dto.GeneralLoginRequest{}), handler.HandleGeneralLogin)
-			e.Get("/test", handler.HandleTest)
+			e.Post("/test", handler.HandleTest)
 			e.Post("/wechat", binding.JSON(dto.WechatLoginRequest{}), handler.HandleWechatLogin)
 		})
 

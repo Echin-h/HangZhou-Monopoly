@@ -2,6 +2,7 @@ package dao
 
 import (
 	"errors"
+	"sync"
 
 	"github.com/Echin-h/HangZhou-Monopoly/config"
 	"github.com/Echin-h/HangZhou-Monopoly/internal/app/user/model"
@@ -10,13 +11,16 @@ import (
 )
 
 var (
-	DB *gorm.DB
+	DB   *gorm.DB
+	once sync.Once
 )
 
 func Init(db *gorm.DB) error {
 	if database.GetDb(config.GetConfig().Databases[0].Key) == nil {
 		return errors.New("database not found")
 	}
-	DB = db
+	once.Do(func() {
+		DB = db
+	})
 	return DB.AutoMigrate(&model.User{})
 }

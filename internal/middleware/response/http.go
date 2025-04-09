@@ -42,6 +42,15 @@ func HTTPFail(r flamego.Render, code int, msg string, err ...any) {
 	http(r, int32(code), msg, nil, err)
 }
 
+func ErrorResponse(r flamego.Render, code int, err ...any) {
+	for i, e := range err {
+		if v, ok := e.(error); ok {
+			err[i] = v.Error()
+		}
+	}
+	http(r, int32(code), "error", nil, err)
+}
+
 func HTTPFailWithData(r flamego.Render, code int, msg string, data any, err ...any) {
 	for i, e := range err {
 		if v, ok := e.(error); ok {
