@@ -16,8 +16,11 @@ const (
 	// GameCode 游戏相关报错
 	GameAlreadyJoinErrorCode = 50100 + iota
 	GameFullErrorCode
+	GameNotFoundErrorCode
 
 	// TeamCode 队伍相关报错
 	TeamAlreadyJoinErrorCode = 50200 + iota
 	TeamFullErrorCode
+	TeamLimitErrorCode
+	TeamNotFoundErrorCode
 )

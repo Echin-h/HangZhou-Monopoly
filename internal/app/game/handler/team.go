@@ -1,162 +1,175 @@
 package handler
 
 import (
+	"errors"
+	"fmt"
+	"time"
+
 	"github.com/Echin-h/HangZhou-Monopoly/internal/app/game/model"
 	"github.com/Echin-h/HangZhou-Monopoly/internal/app/user/dao"
 	"github.com/Echin-h/HangZhou-Monopoly/internal/core/auth"
 	"github.com/Echin-h/HangZhou-Monopoly/internal/middleware/response"
 	"github.com/flamego/flamego"
+	"gorm.io/gorm"
 )
 
+// 当前游戏里的人加入指定的队伍，若指定的teamid为空或者不存在，则创建一个队伍
 func HandleTeamJoin(c flamego.Context, r flamego.Render, auth auth.Info) {
-	var uid string
-	if uid = auth.Uid; uid == "" {
+	// 1. 用户认证检查
+	uid := auth.Uid
+	if uid == "" {
 		response.ErrorResponse(r, model.UnauthorizedErrorCode, "Unauthorized", "未授权")
 		return
 	}
 
-	gameId := c.Param("game_id")
+	// 2. 参数校验
+	gameId := c.Query("game_id")
 	if gameId == "" {
 		response.ErrorResponse(r, model.ParamErrorCode, "Game ID empty", "游戏ID不能为空")
 		return
 	}
-	teamId := c.Param("team_id")
+	teamId := c.Query("team_id")
 
-	// 一个人只能加入一个队伍
-	var tu []model.TeamUser
-	if err := dao.DB.WithContext(c.Request().Context()).Where("user_id = ?", uid).Find(&tu).Error; err != nil {
-		response.ErrorResponse(r, model.DatabaseFindErrorCode, err)
-		return
-	}
-	if len(tu) > 0 {
-		response.ErrorResponse(r, model.TeamAlreadyJoinErrorCode, "Team already joined", "已经加入队伍")
-		return
-	}
-
-	// 游戏人数已满 | 游戏不存在
+	// 3. 检查游戏状态
 	var g model.Game
-	if err := dao.DB.WithContext(c.Request().Context()).Where("id = ?", c.Param("game_id")).First(&g).Error; err != nil {
-		response.ErrorResponse(r, model.DatabaseFindErrorCode, err)
+	if err := dao.DB.WithContext(c.Request().Context()).
+		Where("id = ?", gameId).
+		First(&g).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			response.ErrorResponse(r, model.GameNotFoundErrorCode, "Game not found", "游戏不存在")
+		} else {
+			response.ErrorResponse(r, model.DatabaseFindErrorCode, err)
+		}
 		return
 	}
-	if g.PlayerCount == model.MaxPlayerCount {
+
+	if g.PlayerCount >= model.MaxPlayerCount {
 		response.ErrorResponse(r, model.GameFullErrorCode, "Game full", "游戏人数已满")
 		return
 	}
 
-	// 如果teamId为空表示创建队伍，不为空表示加入队伍
-	if teamId == "" {
-		// 有无队伍
-		var ts []model.Team
-		if err := dao.DB.WithContext(c.Request().Context()).Where("game_id = ?", gameId).Find(&ts).Error; err != nil {
+	// 4. 检查用户是否已加入游戏（必须有TeamUser记录才能操作）
+	var existingTeamUser model.TeamUser
+	if err := dao.DB.WithContext(c.Request().Context()).
+		Where("user_id = ? AND game_id = ?", uid, gameId).
+		First(&existingTeamUser).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			response.ErrorResponse(r, model.TeamAlreadyJoinErrorCode,
+				"Must join game first", "请先加入游戏")
+		} else {
 			response.ErrorResponse(r, model.DatabaseFindErrorCode, err)
+		}
+		return
+	}
+
+	tx := dao.DB.WithContext(c.Request().Context()).Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	var finalTeamID string
+	var isNewTeam bool
+
+	// 5. 处理队伍加入/创建逻辑
+	if teamId != "" {
+		// 5.1 尝试加入指定队伍
+		var targetTeam model.Team
+		if err := tx.Where("id = ? AND game_id = ?", teamId, gameId).
+			First(&targetTeam).Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				response.ErrorResponse(r, model.TeamNotFoundErrorCode, "Team not found", "队伍不存在")
+			} else {
+				response.ErrorResponse(r, model.DatabaseFindErrorCode, err)
+			}
 			return
 		}
 
-		if len(ts) > 0 {
-			// 加入已有队伍
-			joinTeamId := ""
-			for _, t := range ts {
-				if t.Count < model.MaxTeamMember {
-					joinTeamId = t.ID
-					break
-				}
-			}
-
-			if joinTeamId == "" {
-				response.ErrorResponse(r, model.TeamFullErrorCode, "Team full", "队伍已满")
-				return
-			}
-
-			// 加入队伍
-			if err := dao.DB.WithContext(c.Request().Context()).Create(&model.TeamUser{
-				TeamID: joinTeamId,
-				UserID: uid,
-				GameID: gameId,
-			}).Error; err != nil {
-				response.ErrorResponse(r, model.DatabaseCreateErrorCode, err)
-				return
-			}
-
-			if err := dao.DB.WithContext(c.Request().Context()).Model(&model.Team{}).Where("id = ?", joinTeamId).UpdateColumns(map[string]interface{}{
-				"count": g.PlayerCount + 1,
-			}).Error; err != nil {
-				response.ErrorResponse(r, model.DatabaseUpdateErrorCode, err)
-				return
-			}
-
-			if err := dao.DB.WithContext(c.Request().Context()).Model(&model.Game{}).Where("id = ?", gameId).UpdateColumns(map[string]interface{}{
-				"player_count": g.PlayerCount + 1,
-				"team_count":   g.TeamCount,
-			}).Error; err != nil {
-				response.ErrorResponse(r, model.DatabaseUpdateErrorCode, err)
-				return
-			}
-		} else if len(ts) == 0 && g.PlayerCount < model.MaxPlayerCount { // 如果没有队伍
-			// 创建队伍
-			t := &model.Team{
-				GameID: gameId,
-				Leader: uid,
-				Count:  1,
-			}
-			if err := dao.DB.WithContext(c.Request().Context()).Create(t).Error; err != nil {
-				response.ErrorResponse(r, model.DatabaseCreateErrorCode, err)
-				return
-			}
-
-			if err := dao.DB.WithContext(c.Request().Context()).Create(&model.TeamUser{
-				TeamID: t.ID,
-				UserID: uid,
-			}).Error; err != nil {
-				response.ErrorResponse(r, model.DatabaseCreateErrorCode, err)
-				return
-			}
-
-			if err := dao.DB.WithContext(c.Request().Context()).Model(&model.Game{}).Where("id = ?", gameId).UpdateColumns(map[string]interface{}{
-				"player_count": g.PlayerCount + 1,
-				"team_count":   g.TeamCount + 1,
-			}).Error; err != nil {
-				response.ErrorResponse(r, model.DatabaseUpdateErrorCode, err)
-				return
-			}
-		}
-	} else {
-		// 查看队伍是否满员
-		var t model.Team
-		if err := dao.DB.WithContext(c.Request().Context()).Where("id = ?", teamId).First(&t).Error; err != nil {
-			response.ErrorResponse(r, model.DatabaseFindErrorCode, err)
-			return
-		}
-
-		if t.Count >= model.MaxTeamMember {
+		if targetTeam.Count >= model.MaxTeamMember {
 			response.ErrorResponse(r, model.TeamFullErrorCode, "Team full", "队伍已满")
 			return
 		}
+		finalTeamID = targetTeam.ID
+		isNewTeam = false
+	} else {
+		// 5.2 创建新队伍（检查队伍数量限制）
+		// 检查当前游戏的队伍数量
+		var teamCount int64
+		if err := tx.Model(&model.Team{}).
+			Where("game_id = ?", gameId).
+			Count(&teamCount).Error; err != nil {
+			response.ErrorResponse(r, model.DatabaseFindErrorCode, err)
+			return
+		}
 
-		// 加入队伍
-		if err := dao.DB.WithContext(c.Request().Context()).Create(&model.TeamUser{
-			TeamID: teamId,
-			UserID: uid,
-			GameID: gameId,
-		}).Error; err != nil {
+		// 验证队伍数量上限（最多4个队伍）
+		if teamCount >= 4 {
+			response.ErrorResponse(r, model.TeamLimitErrorCode,
+				"Team limit reached", "队伍数量已达上限（最多4个）")
+			return
+		}
+
+		// 生成队伍ID格式：游戏ID-队伍序号（1-4）
+		teamNumber := teamCount + 1
+		teamID := fmt.Sprintf("%s-%d", gameId, teamNumber)
+
+		// 创建新队伍记录
+		newTeam := &model.Team{
+			ID:        teamID, // 格式：游戏ID-1|2|3|4
+			GameID:    gameId,
+			Name:      fmt.Sprintf("队伍%d", teamNumber), // 默认队伍名称
+			Balance:   0,                               // 初始金额
+			Leader:    uid,                             // 队长为当前用户
+			Count:     1,                               // 初始人数
+			CreatedAt: time.Now(),
+		}
+
+		// 将新队伍插入teams表
+		if err := tx.Create(newTeam).Error; err != nil {
 			response.ErrorResponse(r, model.DatabaseCreateErrorCode, err)
 			return
 		}
-		if err := dao.DB.WithContext(c.Request().Context()).Model(&model.Team{}).Where("id = ?", teamId).UpdateColumns(map[string]interface{}{
-			"count": g.PlayerCount + 1,
-		}).Error; err != nil {
-			response.ErrorResponse(r, model.DatabaseUpdateErrorCode, err)
-			return
-		}
+		finalTeamID = newTeam.ID
+		isNewTeam = true
 
-		if err := dao.DB.WithContext(c.Request().Context()).Model(&model.Game{}).Where("id = ?", gameId).UpdateColumns(map[string]interface{}{
-			"player_count": g.PlayerCount + 1,
-			"team_count":   g.TeamCount,
-		}).Error; err != nil {
+		// 更新游戏的队伍计数
+		if err := tx.Model(&model.Game{}).
+			Where("id = ?", gameId).
+			Update("team_count", teamNumber).Error; err != nil {
 			response.ErrorResponse(r, model.DatabaseUpdateErrorCode, err)
 			return
 		}
 	}
 
-	response.HTTPSuccess(r, nil)
+	// 6. 更新用户队伍关系（而不是创建新记录）
+	if err := tx.Model(&model.TeamUser{}).
+		Where("user_id = ? AND game_id = ?", uid, gameId).
+		Update("team_id", finalTeamID).Error; err != nil {
+		response.ErrorResponse(r, model.DatabaseUpdateErrorCode, err)
+		return
+	}
+
+	// 7. 更新队伍人数（只有加入已有队伍时才增加人数）
+	if !isNewTeam {
+		if err := tx.Model(&model.Team{}).
+			Where("id = ?", finalTeamID).
+			Update("count", gorm.Expr("count + 1")).Error; err != nil {
+			response.ErrorResponse(r, model.DatabaseUpdateErrorCode, err)
+			return
+		}
+	}
+
+	// 8. 提交事务
+	if err := tx.Commit().Error; err != nil {
+		response.ErrorResponse(r, model.DatabaseTransactionErrorCode, err)
+		return
+	}
+
+	// 9. 返回成功响应
+	response.HTTPSuccess(r, map[string]interface{}{
+		"game_id": gameId,
+		"team_id": finalTeamID,
+		"action":  map[bool]string{true: "created", false: "joined"}[isNewTeam],
+	})
 }

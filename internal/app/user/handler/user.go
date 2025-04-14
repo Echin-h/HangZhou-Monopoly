@@ -101,7 +101,7 @@ func HandleWechatLogin(r flamego.Render, c flamego.Context, req dto.WechatLoginR
 
 func HandleTest(r flamego.Render, c flamego.Context) {
 	var user model.User
-	err := dao.DB.Model(&model.User{}).WithContext(c.Request().Context()).Where("open_id = 'aaa'").First(&user).Error
+	err := dao.DB.Model(&model.User{}).WithContext(c.Request().Context()).Where("open_id = 'o987654'").First(&user).Error
 	if err != nil {
 		response.ServiceErr(r, err)
 		return

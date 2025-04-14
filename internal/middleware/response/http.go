@@ -20,7 +20,7 @@ func http(r flamego.Render, code int32, msg string, data any, err any) {
 		})
 		return
 	}
-	r.JSON(int(code/1000), &JsonResponse{
+	r.JSON(int(code/100), &JsonResponse{
 		Code:    code,
 		Message: msg,
 		Data:    data,

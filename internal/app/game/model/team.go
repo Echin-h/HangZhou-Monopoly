@@ -10,10 +10,13 @@ import (
 )
 
 const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+const (
+	MaxTeamsPerGame = 4
+)
 
 type Team struct {
-	ID        string `gorm:"primaryKey;type:char(16);"` // 游戏码-1|2|3|4
-	GameID    string `gorm:"game_id;type:char(16);index"`
+	ID        string `gorm:"primaryKey;type:char(26);"` // 游戏码-1|2|3|4
+	GameID    string `gorm:"game_id;type:char(26);index"`
 	Name      string `gorm:"name"`
 	Balance   int    `gorm:"balance;comment:金额"`
 	Leader    string `gorm:"type:char(28);"`
@@ -29,14 +32,14 @@ type Team struct {
 type TeamUser struct {
 	TeamID    string `gorm:"team_id;type:char(28);index"`
 	UserID    string `gorm:"user_id;type:char(28);index"`
-	GameID    string `gorm:"game_id;type:char(16);index"`
+	GameID    string `gorm:"game_id;type:char(26);index"`
 	DeletedAt gorm.DeletedAt
 }
 
-func (t *Team) BeforeCreate() string {
+func (t *Team) BeforeCreate(tx *gorm.DB) error {
 	t.ID = ulid.Make().String()
 	t.Name = "team-" + randomString(5)
-	return t.ID
+	return nil
 }
 
 // randomString 函数用于生成指定长度的随机字符串
